@@ -1,6 +1,6 @@
-package DTO;
+package br.com.contadora.contadora_api.dto;
 
-import model.Produto;
+import br.com.contadora.contadora_api.model.Produto;
 
 public record DadosListagemProdutoDTO(
         String nome,

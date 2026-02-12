@@ -1,4 +1,4 @@
-package DTO;
+package br.com.contadora.contadora_api.dto;
 
 import jakarta.validation.constraints.*;
 

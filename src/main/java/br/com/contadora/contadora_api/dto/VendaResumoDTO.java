@@ -1,4 +1,4 @@
-package DTO;
+package br.com.contadora.contadora_api.dto;
 
 public record VendaResumoDTO(String nomeProduto,
                              int quantidadeVendida,

@@ -1,14 +1,13 @@
-package model;
+package br.com.contadora.contadora_api.model;
 
-import DTO.DadosAtulizarProdutoDTO;
-import DTO.DadosCadastrarProdutoDTO;
+import br.com.contadora.contadora_api.dto.DadosAtulizarProdutoDTO;
+import br.com.contadora.contadora_api.dto.DadosCadastrarProdutoDTO;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.AnyDiscriminatorImplicitValues;
 
 @Table(name ="produto")
 @Entity(name = "Produto")

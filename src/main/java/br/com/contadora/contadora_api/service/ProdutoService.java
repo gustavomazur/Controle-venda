@@ -1,10 +1,10 @@
-package Service;
+package br.com.contadora.contadora_api.service;
 
-import DTO.VendaResumoDTO;
-import model.Produto;
+import br.com.contadora.contadora_api.dto.VendaResumoDTO;
+import br.com.contadora.contadora_api.model.Produto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repository.ProdutoRepository;
+import br.com.contadora.contadora_api.repository.ProdutoRepository;
 
 import java.util.List;
 

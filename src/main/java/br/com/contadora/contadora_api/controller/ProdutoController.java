@@ -1,17 +1,17 @@
-package controller;
+package br.com.contadora.contadora_api.controller;
 
 
-import DTO.DadosAtulizarProdutoDTO;
-import DTO.DadosCadastrarProdutoDTO;
-import DTO.DadosListagemProdutoDTO;
-import DTO.VendaResumoDTO;
-import Service.ProdutoService;
+import br.com.contadora.contadora_api.dto.DadosAtulizarProdutoDTO;
+import br.com.contadora.contadora_api.dto.DadosCadastrarProdutoDTO;
+import br.com.contadora.contadora_api.dto.DadosListagemProdutoDTO;
+import br.com.contadora.contadora_api.dto.VendaResumoDTO;
+import br.com.contadora.contadora_api.service.ProdutoService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import model.Produto;
+import br.com.contadora.contadora_api.model.Produto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import repository.ProdutoRepository;
+import br.com.contadora.contadora_api.repository.ProdutoRepository;
 
 import java.util.List;
 
@@ -45,6 +45,7 @@ public class ProdutoController {
     public void excluirProduto(@PathVariable Long id) {
         respository.deleteById(id);
     }
+    // @http://localhost:8080/produto/lucro-total
     @GetMapping("/lucro-total")
     public double lucroTotal() {
         return service.lucroTotalEstoque();
