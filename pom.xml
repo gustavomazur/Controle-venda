@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.contadora</groupId>
-	<artifactId>contadora-api</artifactId>
+	<artifactId>Sistama-Loja</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>contadora-api</name>
 	<description>API para gerenciamento financeiro de loja</description>
