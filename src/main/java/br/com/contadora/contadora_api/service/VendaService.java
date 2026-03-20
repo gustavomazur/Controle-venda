@@ -79,7 +79,7 @@ public class VendaService {
         LocalDateTime inicioDoDia = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
         LocalDateTime fimDoDia = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
 
-        return vendaRepository.finByDataBetween(inicioDoDia, fimDoDia).stream()
+        return vendaRepository.findByDataBetween(inicioDoDia, fimDoDia).stream()
                 .map(VendaMapper::paraDTO)
                 .collect(Collectors.toList());
     }
@@ -95,7 +95,7 @@ public class VendaService {
         LocalDateTime inicio = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
         LocalDateTime fim = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
 
-        List<Venda> vendasDeHoje = vendaRepository.finByDataBetween(inicio, fim);
+        List<Venda> vendasDeHoje = vendaRepository.findByDataBetween(inicio, fim);
 
         BigDecimal lucroTotal = BigDecimal.ZERO;
 
