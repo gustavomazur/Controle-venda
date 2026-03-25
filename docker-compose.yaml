@@ -1,6 +1,22 @@
 version: "3.8"
 
 services:
+  app:
+    build: .
+    container_name: contador_loja_api
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Sobrescreve as configurações do application.properties para usar o banco no container docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/contador_loja?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=app_user
+      - SPRING_DATASOURCE_PASSWORD=app_password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
   db:
     image: mysql:8.0
     container_name: contador_loja_db
@@ -14,6 +30,10 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - mysql-volume:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
 volumes:
   mysql-volume:
