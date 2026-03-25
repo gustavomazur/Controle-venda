@@ -22,28 +22,24 @@ public class ClienteController {
         this.service = service;
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public ResponseEntity<ClienteDTO> buscaPorId(@PathVariable Long id) {
         ClienteDTO clienete = service.findById(id);
         return ResponseEntity.ok(clienete);
     }
 
-    @GetMapping("/nome")
+    @GetMapping("/nome/{nome}")
     public ResponseEntity<ClienteDTO> buscarPorNome(@PathVariable String nome) {
         ClienteDTO cliente = service.findByNome(nome);
         return ResponseEntity.ok(cliente);
-
     }
 
     @PostMapping
     public ResponseEntity<Void> criar(@Valid @RequestBody ClienteDTO clienteDTO) {
         var clienteSalva = service.insert(clienteDTO);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
-                buildAndExpand(clienteDTO.id()).toUri();
-        clienteSalva = service.insert(clienteDTO);
-        uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(clienteDTO.id())
-                .toUri();
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(clienteSalva.id()).toUri();
+        return ResponseEntity.created(uri).build();
     }
 
     @PutMapping("/{id}")

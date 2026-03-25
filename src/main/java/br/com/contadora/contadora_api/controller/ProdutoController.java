@@ -23,28 +23,24 @@ public class ProdutoController {
             this.service = service;
         }
 
-        @GetMapping("/id")
+        @GetMapping("/{id}")
         public ResponseEntity<ProdutoDTO> buscaPorId(@PathVariable Long id) {
             ProdutoDTO produto = service.findById(id);
             return ResponseEntity.ok(produto);
         }
 
-        @GetMapping("/nome")
+        @GetMapping("/nome/{nome}")
         public ResponseEntity<ProdutoDTO> buscarPorNome(@PathVariable String nome) {
             ProdutoDTO produto = service.findByNome(nome);
             return ResponseEntity.ok(produto);
-
         }
 
         @PostMapping
         public ResponseEntity<Void> criar(@Valid @RequestBody ProdutoDTO produtoDTO) {
             var produtoSalva = service.insert(produtoDTO);
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
-                    buildAndExpand(produtoDTO.id()).toUri();
-            produtoSalva = service.insert(produtoDTO);
-            uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(produtoDTO.id())
-                    .toUri();
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(produtoSalva.id()).toUri();
+            return ResponseEntity.created(uri).build();
         }
 
         @PutMapping("/{id}")

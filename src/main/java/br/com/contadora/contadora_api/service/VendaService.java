@@ -36,10 +36,12 @@ public class VendaService {
 
         venda.setData(LocalDateTime.now());
 
-        //valida o cliente buscando pelo ID
-        var cliente = clienteRepository.findById(dto.clienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-        venda.setCliente(cliente);
+        //valida o cliente buscando pelo ID se foi informado
+        if (dto.clienteId() != null) {
+            var cliente = clienteRepository.findById(dto.clienteId())
+                    .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+            venda.setCliente(cliente);
+        }
 
         // processa os Itens e Baixa o Estoque
         venda.getItens().forEach(item -> {
@@ -57,8 +59,11 @@ public class VendaService {
             produto.setQuantidade(produto.getQuantidade() - item.getQuantidade());
             produtoRepository.save(produto);
 
-            // garante que o preço no item seja o preço de venda atual do produto
-            item.setPreco(produto.getPrecoVenda());
+            // Garante que o preço no item seja o preço de venda padrão,
+            // SOMENTE se o vendedor não enviou um preço customizado (com desconto) no JSON.
+            if (item.getPreco() == null) {
+                item.setPreco(produto.getPrecoVenda());
+            }
 
         });
         // salvar a venda

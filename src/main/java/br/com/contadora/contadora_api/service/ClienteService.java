@@ -17,11 +17,13 @@ import java.util.NoSuchElementException;
 @Service
 public class ClienteService {
 
+    private final ClienteRepository repository;
 
-    private ClienteRepository repository;
+    public ClienteService(ClienteRepository repository) {
+        this.repository = repository;
+    }
 
-
-    public  ClienteDTO findById(Long id) {
+    public ClienteDTO findById(Long id) {
         Cliente cliente = repository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuário não encontrado com o ID: " + id));
         return ClienteMapper.paraDTO(cliente);
@@ -40,7 +42,7 @@ public class ClienteService {
 
     public void atualizaCliente(Cliente cliente) {
         if (!repository.existsById(cliente.getId().longValue())) {
-            throw new EntityNotFoundException("Usuário não encontrado para atualizar");
+            throw new EntityNotFoundException("Cliente não encontrado para atualizar");
         }
         repository.save(cliente);
     }
