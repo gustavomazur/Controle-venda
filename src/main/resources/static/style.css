@@ -93,3 +93,50 @@ button[type="submit"]:hover, button[type="button"]:hover {
     margin-right: 10px;
     width: calc(25% - 10px);
 }
+
+.endereco {
+    border: 2px solid #28a745;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    background-color: #f9fff9;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.endereco input {
+    flex: 1 1 180px;
+    padding: 8px;
+    border: 1px solid #28a745;
+    border-radius: 4px;
+}
+
+.endereco button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.endereco button:hover {
+    background-color: #c82333;
+}
+
+#adicionarEndereco{
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin-top: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#adicionarEndereco:hover {
+    background-color: #0056b3;
+}

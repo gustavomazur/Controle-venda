@@ -12,26 +12,47 @@ function showTab(tabName) {
 
 document.getElementById('clienteForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const enderecoElements = document.querySelectorAll('#enderecos .endereco');
+
+    const enderecos = [];
+
+    enderecoElements.forEach(div => {
+        const endereco = {
+            nome: div.querySelector('.nome').value,
+            cep: div.querySelector('.cep').value,
+            rua: div.querySelector('.rua').value,
+            numero: div.querySelector('.numero').value,
+            referecncia: div.querySelector('.referencia').value // tá digitado errado no back end, tem q resolver epois
+        };
+
+        enderecos.push(endereco);
+    });
+
     const data = {
         nome: document.getElementById('nome').value,
         telefone: document.getElementById('telefone').value,
-        endereco: [document.getElementById('endereco').value],
+        endereco: enderecos,
         cpf: document.getElementById('cpf').value,
         tamanho: document.getElementById('tamanho').value,
         foto: document.getElementById('foto').value
     };
+
     try {
         const response = await fetch(`${API_BASE}/cliente`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
+
         if (response.ok) {
             alert('Cliente cadastrado com sucesso!');
             document.getElementById('clienteForm').reset();
+            document.getElementById('enderecos').innerHTML = ''; // limpa os endereços
         } else {
             alert('Erro ao cadastrar cliente.');
         }
+
     } catch (error) {
         console.error('Error:', error);
         alert('Erro de conexão.');
@@ -127,3 +148,27 @@ document.getElementById('vendaForm').addEventListener('submit', async (e) => {
         alert('Erro de conexão.');
     }
 });
+
+
+function adicionarEndereco(){
+    const enderecoDiv = document.getElementById('enderecos');
+    const novoEnderecoDiv = document.createElement('div');
+
+    novoEnderecoDiv.className = 'endereco';
+
+    novoEnderecoDiv.innerHTML = `
+        <input type="text" placeholder="Nome" class="nome">
+        <input type="text" placeholder="CEP" class="cep">
+        <input type="text" placeholder="Rua" class="rua">
+        <input type="text" placeholder="Número" class="numero">
+        <input type="text" placeholder="Referência" class="referencia">
+        
+        <button type="button" onclick="removerEndereco(this)">Remover</button>
+    `;
+
+    enderecoDiv.appendChild(novoEnderecoDiv);
+}
+
+function removerEndereco(button){
+    button.parentElement.remove();
+}
