@@ -8,10 +8,10 @@ import java.util.List;
 @Table(name = "cliente")
 @Entity(name = "Cliente")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Data
 public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +23,8 @@ public class Cliente {
     private List<Endereco> enderecos;
     private String cpf;
     private String tamanho;
+
+    @Column(length = 1000)
     private String foto;
 
 }

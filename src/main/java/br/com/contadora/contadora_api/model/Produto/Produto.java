@@ -8,10 +8,10 @@ import java.math.BigDecimal;
 @Table(name = "produto")
 @Entity(name = "Produto")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Data
 public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +22,8 @@ public class Produto {
     private String descricao;
     private BigDecimal precoCompra;
     private BigDecimal precoVenda;
+
+    @Column(length = 1000)
     private String imagem;
     private String barraDoProduto;
 }

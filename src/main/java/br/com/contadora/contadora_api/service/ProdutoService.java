@@ -7,18 +7,28 @@ import br.com.contadora.contadora_api.mapper.ProdutoMapper;
 import br.com.contadora.contadora_api.model.Cliente.Cliente;
 import br.com.contadora.contadora_api.model.Produto.Produto;
 import br.com.contadora.contadora_api.repository.ProdutoRepository;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class ProdutoService {
 
         private final ProdutoRepository repository;
+        private final Cloudinary cloudinary;
 
-        public ProdutoService(ProdutoRepository repository) {
+        public ProdutoService(ProdutoRepository repository, Cloudinary cloudinary) {
             this.repository = repository;
+            this.cloudinary = cloudinary;
         }
 
 
@@ -32,10 +42,18 @@ public class ProdutoService {
                     .orElseThrow(() -> new RuntimeException("Produto " + nome + " não encontrado"));
             return ProdutoMapper.paraDTO(produto);
         }
-        public @Valid ProdutoDTO insert(@Valid ProdutoDTO produtoDTO) {
+        public @Valid ProdutoDTO insert(@Valid ProdutoDTO produtoDTO, MultipartFile arquivo) throws IOException {
+            
+            @SuppressWarnings("unchecked")
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(arquivo.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
+            String urlImagem = (String) uploadResult.get("secure_url");
+            
             Produto produto = ProdutoMapper.paraProduto(produtoDTO);
+            produto.setImagem(urlImagem);
+            
             produto.setId(null);
             produto = repository.save(produto);
+            
             return ProdutoMapper.paraDTO(produto);
         }
 
@@ -46,8 +64,13 @@ public class ProdutoService {
             repository.save(produto);
         }
 
+        public List<ProdutoDTO> listarTodos() {
+            return repository.findAll().stream()
+                    .map(ProdutoMapper::paraDTO)
+                    .collect(Collectors.toList());
+        }
+
         public void deleteById(Long id) {
             repository.deleteById(id.longValue());
         }
     }
-

@@ -7,9 +7,12 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/cliente")
@@ -20,6 +23,12 @@ public class ClienteController {
 
     public ClienteController(ClienteService service) {
         this.service = service;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ClienteDTO>> listarTodos() {
+        List<ClienteDTO> clientes = service.listarTodos();
+        return ResponseEntity.ok(clientes);
     }
 
     @GetMapping("/{id}")
@@ -34,9 +43,12 @@ public class ClienteController {
         return ResponseEntity.ok(cliente);
     }
 
-    @PostMapping
-    public ResponseEntity<Void> criar(@Valid @RequestBody ClienteDTO clienteDTO) {
-        var clienteSalva = service.insert(clienteDTO);
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<Void> criar(@RequestPart("cliente") @Valid ClienteDTO clienteDTO,
+                                      @RequestPart("arquivo") MultipartFile arquivo) throws IOException {
+
+        var clienteSalva = service.insert(clienteDTO, arquivo);
+
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(clienteSalva.id()).toUri();
         return ResponseEntity.created(uri).build();

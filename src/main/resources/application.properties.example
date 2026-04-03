@@ -1,8 +1,0 @@
-# Para usar o MySQL nativo, escreva 'dev'. Para usar o Docker, escreva 'docker'.
-spring.profiles.active=dev
-
-# Configurações do Cloudinary
-# Substitua pelas suas credenciais do Cloudinary
-cloudinary.cloud_name=SUA_CLOUD_NAME
-cloudinary.api_key=SUA_API_KEY
-cloudinary.api_secret=SUA_API_SECRET
