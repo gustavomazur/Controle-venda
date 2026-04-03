@@ -1,0 +1,5 @@
+# Configurações para desenvolvimento local
+spring.datasource.url=jdbc:mysql://localhost:3306/controle_venda?createDatabaseIfNotExist=true
+spring.datasource.username=SEU_USUARIO_MYSQL
+spring.datasource.password=SUA_SENHA_MYSQL
+spring.jpa.hibernate.ddl-auto=update
