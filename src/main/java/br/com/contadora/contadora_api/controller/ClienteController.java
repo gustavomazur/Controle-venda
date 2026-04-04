@@ -2,7 +2,9 @@ package br.com.contadora.contadora_api.controller;
 
 import br.com.contadora.contadora_api.dto.ClienteDTO;
 import br.com.contadora.contadora_api.model.Cliente.Cliente;
+import br.com.contadora.contadora_api.model.endereco.Endereco;
 import br.com.contadora.contadora_api.service.ClienteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +17,16 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cliente")
+@RequestMapping("/api/clientes")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ClienteController {
 
-
     private final ClienteService service;
+    private final ObjectMapper objectMapper;
 
-    public ClienteController(ClienteService service) {
+    public ClienteController(ClienteService service, ObjectMapper objectMapper) {
         this.service = service;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping
@@ -33,8 +37,8 @@ public class ClienteController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ClienteDTO> buscaPorId(@PathVariable Long id) {
-        ClienteDTO clienete = service.findById(id);
-        return ResponseEntity.ok(clienete);
+        ClienteDTO cliente = service.findById(id);
+        return ResponseEntity.ok(cliente);
     }
 
     @GetMapping("/nome/{nome}")
@@ -43,23 +47,61 @@ public class ClienteController {
         return ResponseEntity.ok(cliente);
     }
 
+    /**
+     * Criar novo cliente com endereços múltiplos
+     *
+     * Espera dados no formato FormData:
+     * - nome: String
+     * - cpf: String
+     * - telefone: String
+     * - tamanho: String
+     * - foto: File (MultipartFile)
+     * - endereco: JSON Array de endereços
+     */
     @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity<Void> criar(@RequestPart("cliente") @Valid ClienteDTO clienteDTO,
-                                      @RequestPart("arquivo") MultipartFile arquivo) throws IOException {
+    public ResponseEntity<ClienteDTO> criar(
+            @RequestParam String nome,
+            @RequestParam String cpf,
+            @RequestParam String telefone,
+            @RequestParam String tamanho,
+            @RequestParam(required = false) MultipartFile foto,
+            @RequestParam(required = false) String endereco
+    ) throws IOException {
 
-        var clienteSalva = service.insert(clienteDTO, arquivo);
+        // Criar ClienteDTO
+        ClienteDTO clienteDTO = new ClienteDTO(
+                null,
+                nome,
+                telefone,
+                null, // enderecos (será preenchido depois)
+                cpf,
+                tamanho,
+                null  // foto (será preenchida pelo service)
+        );
+
+        // Fazer upload da foto e salvar cliente
+        ClienteDTO clienteSalva = service.insert(clienteDTO, foto);
+
+        // Se enviou endereços, adicionar ao cliente
+        if (endereco != null && !endereco.isEmpty()) {
+            List<Endereco> enderecos = objectMapper.readValue(
+                    endereco,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, Endereco.class)
+            );
+            clienteSalva = service.adicionarEnderecos(clienteSalva.id(), enderecos);
+        }
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(clienteSalva.id()).toUri();
-        return ResponseEntity.created(uri).build();
+        return ResponseEntity.created(uri).body(clienteSalva);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> atualizar(@PathVariable Long id, @RequestBody Cliente cliente) {
-        cliente.setId(id);
-        service.atualizaCliente(cliente);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ClienteDTO> atualizar(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO) {
+        ClienteDTO clienteAtualizado = service.atualizar(id, clienteDTO);
+        return ResponseEntity.ok(clienteAtualizado);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         service.deleteById(id);

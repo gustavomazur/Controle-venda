@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/venda")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class VendaUsuario {
 
     private final br.com.contadora.contadora_api.service.VendaService service;

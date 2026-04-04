@@ -3,116 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Controle de Vendas</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Dashboard - Controle de Vendas</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Painel de Controle</h1>
-        <div class="tabs">
-            <button class="tab-button active" onclick="showTab('cliente')">Cadastrar Cliente</button>
-            <button class="tab-button" onclick="showTab('produto')">Cadastrar Produto</button>
-            <button class="tab-button" onclick="showTab('venda')">Cadastrar Venda</button>
-        </div>
-        <div id="cliente" class="tab-content active">
-            <h2>Cadastrar Cliente</h2>
-            <form id="clienteForm">
-                <label for="nome">Nome:</label>
-                <input type="text" id="nome" required>
-
-                <label for="telefone">Telefone:</label>
-                <input type="text" id="telefone" required>
-
-<!--                <label for="endereco">Endereço:</label>-->
-<!--                <input type="text" id="endereco" required>-->
-                <div id="adicionarEndereco" onclick="adicionarEndereco()">Adicionar endereço</div>
-                <div id="enderecos"></div>
-
-                <label for="cpf">CPF:</label>
-                <input type="text" id="cpf" required>
-
-                <label for="tamanho">Tamanho:</label>
-                <input type="text" id="tamanho">
-
-                <label for="foto">Foto (URL):</label>
-                <input type="url" id="foto">
-
-                <button type="submit">Cadastrar</button>
-            </form>
-        </div>
-        <div id="produto" class="tab-content">
-            <h2>Cadastrar Produto</h2>
-            <form id="produtoForm">
-                <label for="prodNome">Nome:</label>
-                <input type="text" id="prodNome" required>
-
-                <label for="quantidade">Quantidade:</label>
-                <input type="number" id="quantidade" required>
-
-                <label for="categoria">Categoria:</label>
-                <input type="text" id="categoria" required>
-
-                <label for="descricao">Descrição:</label>
-                <textarea id="descricao"></textarea>
-
-                <label for="precoCompra">Preço de Compra:</label>
-                <input type="number" step="0.01" id="precoCompra" required>
-
-                <label for="precoVenda">Preço de Venda:</label>
-                <input type="number" step="0.01" id="precoVenda" required>
-
-                <label for="imagem">Imagem (URL):</label>
-                <input type="url" id="imagem">
-
-                <label for="barraDoProduto">Código de Barras:</label>
-                <input type="text" id="barraDoProduto">
-
-                <button type="submit">Cadastrar</button>
-            </form>
-        </div>
-        <div id="venda" class="tab-content">
-            <h2>Cadastrar Venda</h2>
-            <form id="vendaForm">
-                <label for="clienteId">ID do Cliente:</label>
-                <input type="number" id="clienteId" required>
-
-                <label for="clienteNome">Nome do Cliente:</label>
-                <input type="text" id="clienteNome" required>
-
-                <label for="vendedor">Vendedor:</label>
-                <input type="text" id="vendedor" required>
-
-                <label for="tipoPagamento">Tipo de Pagamento:</label>
-                <select id="tipoPagamento" required>
-                    <option value="DINHEIRO">Dinheiro</option>
-                    <option value="CARTAO">Cartão</option>
-                    <option value="PIX">PIX</option>
-                </select>
-
-                <label for="descontoTipo">Tipo de Desconto:</label>
-                <input type="text" id="descontoTipo" placeholder="Ex: PERCENTUAL">
-
-                <label for="descontoValor">Valor do Desconto:</label>
-                <input type="number" step="0.01" id="descontoValor">
-
-                <div id="itens">
-                    <h3>Itens da Venda</h3>
-                    <div class="item">
-                        <label>Produto ID:</label>
-                        <input type="number" class="produtoId" required>
-                        <label>Quantidade:</label>
-                        <input type="number" class="quantidade" required>
-                        <label>Preço:</label>
-                        <input type="number" step="0.01" class="preco" required>
-                        <button type="button" onclick="removerItem(this)">Remover</button>
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Menu</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="#" class="nav-item active" data-page="dashboard">
+                            📊 Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-page="cadastro-cliente">
+                            👤 Cadastrar Cliente
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-page="cadastro-produto">
+                            📦 Cadastrar Produto
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-page="cadastro-venda">
+                            💳 Cadastrar Venda
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-page="listar-clientes">
+                            📋 Listar Clientes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item" data-page="listar-produtos">
+                            📋 Listar Produtos
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <!-- CONTEÚDO DINÂMICO -->
+        <main class="conteudo-principal">
+            <div id="conteudo-dinamico">
+                <!-- Dashboard inicial -->
+                <div id="dashboard" class="page active">
+                    <div class="page-header">
+                        <h1>Dashboard</h1>
+                    </div>
+                    <div class="dashboard-content">
+                        <div class="card">
+                            <h3>Total de Clientes</h3>
+                            <p class="numero" id="total-clientes">0</p>
+                        </div>
+                        <div class="card">
+                            <h3>Total de Produtos</h3>
+                            <p class="numero" id="total-produtos">0</p>
+                        </div>
+                        <div class="card">
+                            <h3>Total de Vendas</h3>
+                            <p class="numero" id="total-vendas">0</p>
+                        </div>
                     </div>
                 </div>
-                <button type="button" onclick="adicionarItem()">Adicionar Item</button>
-
-                <button type="submit">Cadastrar Venda</button>
-            </form>
-        </div>
+                <!-- Cadastro de Cliente -->
+                <div id="cadastro-cliente" class="page">
+                    <div class="page-header">
+                        <h1>Cadastrar Cliente</h1>
+                    </div>
+                    <form id="form-cliente" class="form-container">
+                        <div class="form-group">
+                            <label for="cliente-nome">Nome:</label>
+                            <input type="text" id="cliente-nome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cliente-cpf">CPF:</label>
+                            <input type="text" id="cliente-cpf" name="cpf" placeholder="000.000.000-00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cliente-telefone">Telefone:</label>
+                            <input type="tel" id="cliente-telefone" name="telefone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cliente-tamanho">Tamanho:</label>
+                            <input type="text" id="cliente-tamanho" name="tamanho" placeholder="P, M, G, etc..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cliente-foto">Foto do Cliente:</label>
+                            <input type="file" id="cliente-foto" name="foto" accept="image/*" required>
+                            <small>Selecione uma imagem para upload</small>
+                        </div>
+                        <!-- Seção de Endereços -->
+                        <div class="endereco-section">
+                            <div class="endereco-header">
+                                <h3>Endereços</h3>
+                                <button type="button" id="btn-adicionar-endereco" class="btn-add">+ Adicionar Endereço</button>
+                            </div>
+                            <div id="lista-enderecos" class="endereco-lista">
+                                <!-- Endereços serão adicionados aqui dinamicamente -->
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit">Cadastrar Cliente</button>
+                    </form>
+                    <div id="mensagem-cliente" class="mensagem"></div>
+                </div>
+                <!-- Modal para Adicionar Endereço -->
+                <div id="modal-endereco" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close">&times;</span>
+                        <h2>Adicionar Endereço</h2>
+                        <form id="form-endereco" class="form-endereco">
+                            <div class="form-group">
+                                <label for="endereco-nome">Nome do Endereço:</label>
+                                <input type="text" id="endereco-nome" name="nome" placeholder="Ex: Casa, Trabalho" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="endereco-cpe">CEP:</label>
+                                <input type="text" id="endereco-cpe" name="cpe" placeholder="00000-000" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="endereco-rua">Rua:</label>
+                                <input type="text" id="endereco-rua" name="rua" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="endereco-numero">Número:</label>
+                                <input type="text" id="endereco-numero" name="numero" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="endereco-referencia">Referência:</label>
+                                <input type="text" id="endereco-referencia" name="referencia" placeholder="Opcional">
+                            </div>
+                            <div class="modal-buttons">
+                                <button type="submit" class="btn-submit">Adicionar</button>
+                                <button type="button" class="btn-cancel" id="btn-cancel-endereco">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Cadastro de Produto -->
+                <div id="cadastro-produto" class="page">
+                    <div class="page-header">
+                        <h1>Cadastrar Produto</h1>
+                    </div>
+                    <form id="form-produto" class="form-container">
+                        <div class="form-group">
+                            <label for="produto-nome">Nome do Produto:</label>
+                            <input type="text" id="produto-nome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-descricao">Descrição:</label>
+                            <textarea id="produto-descricao" name="descricao" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-preco">Preço:</label>
+                            <input type="number" id="produto-preco" name="preco" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-quantidade">Quantidade em Estoque:</label>
+                            <input type="number" id="produto-quantidade" name="quantidade" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="produto-foto">Foto do Produto:</label>
+                            <input type="file" id="produto-foto" name="foto" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn-submit">Cadastrar Produto</button>
+                    </form>
+                    <div id="mensagem-produto" class="mensagem"></div>
+                </div>
+                <!-- Cadastro de Venda -->
+                <div id="cadastro-venda" class="page">
+                    <div class="page-header">
+                        <h1>Cadastrar Venda</h1>
+                    </div>
+                    <form id="form-venda" class="form-container">
+                        <div class="form-group">
+                            <label for="venda-cliente">Cliente:</label>
+                            <select id="venda-cliente" name="clienteId" required>
+                                <option value="">Selecione um cliente</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="venda-produto">Produto:</label>
+                            <select id="venda-produto" name="produtoId" required>
+                                <option value="">Selecione um produto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="venda-quantidade">Quantidade:</label>
+                            <input type="number" id="venda-quantidade" name="quantidade" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="venda-desconto">Desconto (%):</label>
+                            <input type="number" id="venda-desconto" name="desconto" min="0" max="100" value="0">
+                        </div>
+                        <button type="submit" class="btn-submit">Registrar Venda</button>
+                    </form>
+                    <div id="mensagem-venda" class="mensagem"></div>
+                </div>
+                <!-- Listar Clientes -->
+                <div id="listar-clientes" class="page">
+                    <div class="page-header">
+                        <h1>Lista de Clientes</h1>
+                    </div>
+                    <div id="tabela-clientes" class="tabela-lista">
+                        <!-- Tabela de clientes será carregada aqui -->
+                    </div>
+                </div>
+                <!-- Listar Produtos -->
+                <div id="listar-produtos" class="page">
+                    <div class="page-header">
+                        <h1>Lista de Produtos</h1>
+                    </div>
+                    <div id="tabela-produtos" class="tabela-lista">
+                        <!-- Tabela de produtos será carregada aqui -->
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-    <script src="script.js"></script>
+    <script src="javascript/script.js"></script>
 </body>
 </html>

@@ -3,6 +3,7 @@ package br.com.contadora.contadora_api.service;
 import br.com.contadora.contadora_api.dto.ClienteDTO;
 import br.com.contadora.contadora_api.mapper.ClienteMapper;
 import br.com.contadora.contadora_api.model.Cliente.Cliente;
+import br.com.contadora.contadora_api.model.endereco.Endereco;
 import br.com.contadora.contadora_api.repository.ClienteRepository;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
@@ -37,24 +38,58 @@ public class ClienteService {
                 .orElseThrow(() -> new NoSuchElementException("Usuário não encontrado com o ID: " + id));
         return ClienteMapper.paraDTO(cliente);
     }
-    public ClienteDTO findByNome(String nome){
+
+    public ClienteDTO findByNome(String nome) {
         Cliente cliente = repository.findByNome(nome)
                 .orElseThrow(() -> new RuntimeException("Usuário " + nome + " não encontrado"));
         return ClienteMapper.paraDTO(cliente);
     }
-    public @Valid ClienteDTO insert(@Valid ClienteDTO clienteDTO, MultipartFile arquivo) throws IOException {
-        
-        @SuppressWarnings("unchecked")
-        Map<String, Object> uploadResult = cloudinary.uploader().upload(arquivo.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
-        String urlFoto = (String) uploadResult.get("secure_url");
-        
+
+    /**
+     * Inserir novo cliente com upload de foto
+     * @param clienteDTO Dados do cliente
+     * @param arquivo Arquivo de foto (opcional)
+     * @return ClienteDTO salvo com ID
+     */
+    public ClienteDTO insert(@Valid ClienteDTO clienteDTO, MultipartFile arquivo) throws IOException {
+
+        String urlFoto = null;
+
+        // Fazer upload da foto se fornecida
+        if (arquivo != null && !arquivo.isEmpty()) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> uploadResult = cloudinary.uploader()
+                    .upload(arquivo.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
+            urlFoto = (String) uploadResult.get("secure_url");
+        }
+
+        // Criar cliente e salvar
         Cliente novoCliente = ClienteMapper.paraCliente(clienteDTO);
         novoCliente.setFoto(urlFoto);
-        
         novoCliente.setId(null);
         novoCliente = repository.save(novoCliente);
         
         return ClienteMapper.paraDTO(novoCliente);
+    }
+
+    /**
+     * Adicionar endereços a um cliente existente
+     * @param clienteId ID do cliente
+     * @param enderecos Lista de endereços a adicionar
+     * @return ClienteDTO atualizado
+     */
+    public ClienteDTO adicionarEnderecos(Long clienteId, List<Endereco> enderecos) {
+        Cliente cliente = repository.findById(clienteId)
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com ID: " + clienteId));
+
+        if (cliente.getEnderecos() == null) {
+            cliente.setEnderecos(enderecos);
+        } else {
+            cliente.getEnderecos().addAll(enderecos);
+        }
+
+        cliente = repository.save(cliente);
+        return ClienteMapper.paraDTO(cliente);
     }
 
     public void atualizaCliente(Cliente cliente) {
@@ -62,6 +97,26 @@ public class ClienteService {
             throw new EntityNotFoundException("Cliente não encontrado para atualizar");
         }
         repository.save(cliente);
+    }
+
+    /**
+     * Atualizar cliente existente
+     * @param id ID do cliente
+     * @param clienteDTO Dados atualizados
+     * @return ClienteDTO atualizado
+     */
+    public ClienteDTO atualizar(Long id, ClienteDTO clienteDTO) {
+        Cliente cliente = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com ID: " + id));
+
+        if (clienteDTO.nome() != null) cliente.setNome(clienteDTO.nome());
+        if (clienteDTO.telefone() != null) cliente.setTelefone(clienteDTO.telefone());
+        if (clienteDTO.cpf() != null) cliente.setCpf(clienteDTO.cpf());
+        if (clienteDTO.tamanho() != null) cliente.setTamanho(clienteDTO.tamanho());
+        if (clienteDTO.endereco() != null) cliente.setEnderecos(clienteDTO.endereco());
+
+        cliente = repository.save(cliente);
+        return ClienteMapper.paraDTO(cliente);
     }
 
     public List<ClienteDTO> listarTodos() {
