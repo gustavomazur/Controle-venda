@@ -49,6 +49,24 @@ html, body, #conteudo-dinamico {
     font-weight: 600;
 }
 
+.btn-logout {
+    margin-top: 12px;
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-logout:hover {
+    background-color: #fecaca;
+}
+
 .sidebar-nav {
     flex: 1;
     padding: 16px 0;

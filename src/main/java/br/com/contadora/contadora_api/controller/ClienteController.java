@@ -47,17 +47,6 @@ public class ClienteController {
         return ResponseEntity.ok(cliente);
     }
 
-    /**
-     * Criar novo cliente com endereços múltiplos
-     *
-     * Espera dados no formato FormData:
-     * - nome: String
-     * - cpf: String
-     * - telefone: String
-     * - tamanho: String
-     * - foto: File (MultipartFile)
-     * - endereco: JSON Array de endereços
-     */
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<ClienteDTO> criar(
             @RequestParam String nome,
@@ -73,10 +62,10 @@ public class ClienteController {
                 null,
                 nome,
                 telefone,
-                null, // enderecos (será preenchido depois)
+                null,
                 cpf,
                 tamanho,
-                null  // foto (será preenchida pelo service)
+                null
         );
 
         // Fazer upload da foto e salvar cliente

@@ -1,152 +1,166 @@
-# Contadora API
+# Sistema de Controle de Vendas
 
-API para gerenciamento financeiro e controle de estoque de uma loja.
-
-## Descrição
-
-A **Contadora API** é uma aplicação backend desenvolvida em Java com Spring Boot. Ela permite o cadastro de produtos, controle de estoque, registro de vendas e cálculo de lucros. O projeto é ideal para quem deseja entender como construir uma API RESTful completa com integração a banco de dados e containerização.
+Sistema de gerenciamento de vendas com cadastro de clientes, produtos, vendas e autenticação JWT.
 
 ## Tecnologias
 
-*   **Java 17**
-*   **Spring Boot 3**
-*   **Spring Data JPA**
-*   **MySQL**
-*   **Flyway** (Gerenciamento de Migrations)
-*   **Docker & Docker Compose**
-*   **Lombok**
-*   **Maven**
+- **Backend:** Java 17 + Spring Boot 3.4.3
+- **Frontend:** HTML, CSS, JavaScript (SPA)
+- **Banco de Dados:** MySQL 8.0
+- **Upload de Imagens:** Cloudinary
+- **Autenticação:** JWT (JSON Web Token)
+- **Build:** Maven
 
 ## Pré-requisitos
 
-Para rodar este projeto localmente, você precisará ter instalado:
+- Java 17+
+- Maven 3.8+
+- MySQL 8.0
 
-*   **Java 17** ou superior
-*   **Docker** e **Docker Compose**
-*   **Git**
+## Instalação
 
-## Instalação e Execução
-
-Siga os passos abaixo para rodar a aplicação no seu computador:
-
-### 1. Clonar o repositório
-
-Abra o terminal e execute:
+### 1. Clonar o projeto
 
 ```bash
 git clone https://github.com/gustavomazur/contadora-api.git
 cd contadora-api
 ```
 
-### 2. Subir o Banco de Dados
+### 2. Instalar e configurar o MySQL
 
-O projeto utiliza um arquivo `docker-compose.yaml` para facilitar a configuração do banco de dados MySQL. Execute:
+#### No Ubuntu/Linux:
+```bash
+sudo apt install mysql-server
+sudo systemctl start mysql
+sudo mysql
+```
+
+No MySQL, execute:
+```sql
+CREATE DATABASE IF NOT EXISTS controle_venda;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'sua_senha';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+#### No Windows/Mac:
+Baixe o MySQL em https://dev.mysql.com/downloads/mysql/ e siga o instalador.
+
+### 3. Configurar variáveis de ambiente
+
+Copie o arquivo de exemplo:
+```bash
+cp .env.example .env
+```
+
+Edite o `.env` com suas configurações:
+```env
+SPRING_PROFILES_ACTIVE=dev
+CLOUDINARY_CLOUD_NAME=seu_cloud_name
+CLOUDINARY_API_KEY=sua_api_key
+CLOUDINARY_API_SECRET=sua_api_secret
+SPRING_DATASOURCE_USERNAME_DEV=root
+SPRING_DATASOURCE_PASSWORD_DEV=sua_senha_mysql
+```
+
+### 4. Credenciais do Cloudinary (opcional)
+
+Para ativar o upload de imagens:
+1. Acesse https://cloudinary.com/console
+2. Crie uma conta gratuita
+3. Copie as credenciais para o `.env`
+
+## Rodar o projeto
+
+### Modo desenvolvimento (MySQL local)
+
+```bash
+./mvnw spring-boot:run
+```
+
+### Modo Docker (MySQL no container)
 
 ```bash
 docker-compose up -d
 ```
 
-Isso irá baixar a imagem do MySQL e iniciar o container na porta `3306`.
+## Acessar a aplicação
 
-### 3. Configurar as Credenciais
-
-Antes de executar a aplicação, você precisa configurar as credenciais usando o arquivo `.env`:
-
-```bash
-# Copiar o arquivo de exemplo
-cp .env.example .env
-```
-
-**Edite o arquivo `.env` e configure suas credenciais reais:**
-
-```bash
-# Suas credenciais do Cloudinary
-CLOUDINARY_CLOUD_NAME=da7zpj35m
-CLOUDINARY_API_KEY=sua_api_key_aqui
-CLOUDINARY_API_SECRET=seu_api_secret_aqui
-
-# Suas credenciais do MySQL
-SPRING_DATASOURCE_USERNAME_DEV=seu_usuario_mysql
-SPRING_DATASOURCE_PASSWORD_DEV=sua_senha_mysql
-```
-
-**O arquivo `.env` contém:**
-- ✅ Credenciais do Cloudinary (para upload de imagens)
-- ✅ Credenciais do banco de dados MySQL
-- ✅ Configurações de perfil da aplicação
-- ✅ Configurações JPA/Hibernate
-
-### 4. Executar a Aplicação
-
-Você não precisa ter o Maven instalado globalmente, pois o projeto inclui o Maven Wrapper.
-
-**No Linux/macOS:**
-```bash
-./mvnw spring-boot:run
-```
-
-**No Windows (Prompt de Comando ou PowerShell):**
-```cmd
-mvnw spring-boot:run
-```
-
-A aplicação iniciará e estará disponível em `http://localhost:8080`.
-
-## Configuração do Banco de Dados
-
-As credenciais do banco de dados já estão configuradas por padrão para o ambiente de desenvolvimento:
-
-*   **URL**: `jdbc:mysql://localhost:3306/contador_loja`
-*   **Usuário**: `app_user`
-*   **Senha**: `app_password`
-
-Caso queira alterar, edite o arquivo `src/main/resources/application.properties` e o `docker-compose.yaml`.
+- **Frontend:** http://localhost:8080
+- **Cadastro:** http://localhost:8080/cadastro.html
+- **Login:** http://localhost:8080/login.html
 
 ## Endpoints da API
 
-Aqui estão os principais endpoints disponíveis para testar (você pode usar o Postman ou Insomnia):
+### Autenticação
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/api/auth/cadastro` | Cadastrar novo usuário |
+| POST | `/api/auth/login` | Fazer login |
+
+### Clientes
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/clientes` | Listar todos os clientes |
+| GET | `/api/clientes/{id}` | Buscar cliente por ID |
+| POST | `/api/clientes` | Cadastrar cliente |
+| PUT | `/api/clientes/{id}` | Atualizar cliente |
+| DELETE | `/api/clientes/{id}` | Deletar cliente |
 
 ### Produtos
 
-*   **Cadastrar Produto**
-    *   `POST /produto`
-    *   Body (JSON):
-        ```json
-        {
-          "nome": "Camiseta",
-          "preco": 49.90,
-          "quantidade": 100
-        }
-        ```
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/produto` | Listar todos os produtos |
+| GET | `/produto/{id}` | Buscar produto por ID |
+| POST | `/produto` | Cadastrar produto |
+| PUT | `/produto/{id}` | Atualizar produto |
+| DELETE | `/produto/{id}` | Deletar produto |
 
-*   **Listar Produtos**
-    *   `GET /produto`
+### Vendas
 
-*   **Atualizar Produto**
-    *   `PUT /produto`
-    *   Body (JSON):
-        ```json
-        {
-          "id": 1,
-          "nome": "Camiseta Azul",
-          "preco": 55.00
-        }
-        ```
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/venda` | Listar todas as vendas |
+| POST | `/venda` | Registrar venda |
 
-*   **Deletar Produto**
-    *   `DELETE /produto/{id}`
+## Estrutura do projeto
 
-*   **Vender Produto**
-    *   `POST /produto/{id}/vender/{quantidade}`
-    *   Exemplo: `POST /produto/1/vender/2` (Vende 2 unidades do produto ID 1)
+```
+src/
+├── main/
+│   ├── java/br/com/contadora/contadora_api/
+│   │   ├── config/          # Configurações (Security, Cloudinary, JWT)
+│   │   ├── controller/      # REST Controllers
+│   │   ├── dto/             # Data Transfer Objects
+│   │   ├── mapper/          # Mapeamento DTO <-> Entidade
+│   │   ├── model/           # Entidades JPA
+│   │   ├── repository/      # Repositórios JPA
+│   │   └── service/          # Lógica de negócio
+│   └── resources/
+│       ├── static/          # Arquivos frontend (HTML, CSS, JS)
+│       └── application.properties
+└── test/
+```
 
-*   **Calcular Lucro Total**
-    *   `GET /produto/lucro-total`
+## Fluxo de autenticação
 
-## Estrutura do Projeto
+1. Usuário se cadastra em `/cadastro.html`
+2. Sistema cria usuário com senha criptografada (BCrypt)
+3. Usuário faz login em `/login.html`
+4. Sistema retorna token JWT (válido por 24h)
+5. Token é armazenado no localStorage
+6. Todas as requisições para `/api/**`enviam o token no header `Authorization: Bearer <token>`
+7. Se token expirar, usuário é redirecionado para login
 
-O código fonte principal encontra-se em `src/main/java/br/com/contadora/contadora_api`.
+## Importante
 
-## Licença
+- **NUNCA** commite o arquivo `.env` com dados reais
+- O `.gitignore` já protege arquivos sensíveis
+- Use `.env.example` como template
 
-Este projeto está licenciado sob a licença [MIT](LICENSE).
+## License
+
+MIT License

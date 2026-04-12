@@ -45,12 +45,6 @@ public class ClienteService {
         return ClienteMapper.paraDTO(cliente);
     }
 
-    /**
-     * Inserir novo cliente com upload de foto
-     * @param clienteDTO Dados do cliente
-     * @param arquivo Arquivo de foto (opcional)
-     * @return ClienteDTO salvo com ID
-     */
     public ClienteDTO insert(@Valid ClienteDTO clienteDTO, MultipartFile arquivo) throws IOException {
 
         String urlFoto = null;

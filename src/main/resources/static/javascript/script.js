@@ -2,10 +2,25 @@
    GERENCIAR NAVEGAÇÃO E ESTADO
    ============================ */
 document.addEventListener('DOMContentLoaded', function () {
+    if (!estaLogado()) {
+        window.location.href = 'login.html';
+        return;
+    }
+    
     inicializarNavegacao();
     carregarDadosIniciais();
     inicializarModalEnderecos();
 });
+
+function logout() {
+    localStorage.removeItem('usuario');
+    window.location.href = 'login.html';
+}
+
+function estaLogado() {
+    const usuario = localStorage.getItem('usuario');
+    return usuario !== null;
+}
 
 // Função para inicializar a navegação
 function inicializarNavegacao() {
@@ -63,7 +78,7 @@ function carregarDadosIniciais() {
 function carregarTotalClientes() {
     fetch('/api/clientes')
         .then(response => response.json())
-        .then(data => {
+        .then((data) => {
             document.getElementById('total-clientes').textContent = data.length;
         })
         .catch(error => {
@@ -74,7 +89,7 @@ function carregarTotalClientes() {
 
 // Carregar total de produtos
 function carregarTotalProdutos() {
-    fetch('/api/produtos')
+    fetch('/produto')
         .then(response => response.json())
         .then(data => {
             document.getElementById('total-produtos').textContent = data.length;
@@ -87,7 +102,7 @@ function carregarTotalProdutos() {
 
 // Carregar total de vendas
 function carregarTotalVendas() {
-    fetch('/api/vendas')
+    fetch('/venda')
         .then(response => response.json())
         .then(data => {
             document.getElementById('total-vendas').textContent = data.length;
@@ -122,7 +137,7 @@ function carregarClientesSelect() {
 
 // Função para carregar produtos no select
 function carregarProdutosSelect() {
-    fetch('/api/produtos')
+    fetch('/produto')
         .then(response => response.json())
         .then(data => {
             const select = document.getElementById('venda-produto');
@@ -229,165 +244,180 @@ function removerEndereco(index) {
 /* ============================
    FORMULÁRIO DE CLIENTE
    ============================ */
-document.getElementById('form-cliente')?.addEventListener('submit', function (e) {
-    e.preventDefault();
+const formCliente = document.getElementById('form-cliente');
+if (formCliente) {
+    formCliente.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-    // Obter dados do formulário
-    const nome = document.getElementById('cliente-nome').value;
-    const cpf = document.getElementById('cliente-cpf').value;
-    const telefone = document.getElementById('cliente-telefone').value;
-    const tamanho = document.getElementById('cliente-tamanho').value;
-    const fotoInput = document.getElementById('cliente-foto');
-    const foto = fotoInput.files[0];
+        // Obter dados do formulário
+        const nome = document.getElementById('cliente-nome').value;
+        const cpf = document.getElementById('cliente-cpf').value;
+        const telefone = document.getElementById('cliente-telefone').value;
+        const tamanho = document.getElementById('cliente-tamanho').value;
+        const fotoInput = document.getElementById('cliente-foto');
+        const foto = fotoInput.files[0];
 
-    // Validar se tem foto
-    if (!foto) {
-        mostrarMensagem('cliente', 'Por favor, selecione uma foto!', 'error');
-        return;
-    }
-
-    // Validar se tem endereço
-    if (enderecosTemporarios.length === 0) {
-        mostrarMensagem('cliente', 'Por favor, adicione pelo menos um endereço!', 'error');
-        return;
-    }
-
-    // Criar FormData para enviar arquivo e dados
-    const formData = new FormData();
-    formData.append('nome', nome);
-    formData.append('cpf', cpf);
-    formData.append('telefone', telefone);
-    formData.append('tamanho', tamanho);
-    formData.append('foto', foto);
-    formData.append('endereco', JSON.stringify(enderecosTemporarios));
-
-    // Enviar para API
-    fetch('/api/clientes', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else if (response.status === 400) {
-            return response.json().then(err => {
-                throw new Error(err.message || 'Dados inválidos');
-            });
-        } else {
-            throw new Error('Erro ao cadastrar cliente');
+        // Validar se tem foto
+        if (!foto) {
+            mostrarMensagem('cliente', 'Por favor, selecione uma foto!', 'error');
+            return;
         }
-    })
-    .then(data => {
-        console.log('Cliente cadastrado:', data);
-        mostrarMensagem('cliente', 'Cliente cadastrado com sucesso!', 'success');
-        document.getElementById('form-cliente').reset();
-        enderecosTemporarios = [];
-        atualizarListaEnderecos();
-        // Recarregar dados do dashboard
-        setTimeout(() => carregarTotalClientes(), 1000);
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        mostrarMensagem('cliente', error.message || 'Erro ao conectar com o servidor.', 'error');
+
+        // Validar se tem endereço
+        if (enderecosTemporarios.length === 0) {
+            mostrarMensagem('cliente', 'Por favor, adicione pelo menos um endereço!', 'error');
+            return;
+        }
+
+        // Criar FormData para enviar arquivo e dados
+        const formData = new FormData();
+        formData.append('nome', nome);
+        formData.append('cpf', cpf);
+        formData.append('telefone', telefone);
+        formData.append('tamanho', tamanho);
+        formData.append('foto', foto);
+        formData.append('endereco', JSON.stringify(enderecosTemporarios));
+
+        // Enviar para API
+        fetch('/api/clientes', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else if (response.status === 400) {
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Dados inválidos');
+                });
+            } else {
+                throw new Error('Erro ao cadastrar cliente');
+            }
+        })
+        .then(data => {
+            console.log('Cliente cadastrado:', data);
+            mostrarMensagem('cliente', 'Cliente cadastrado com sucesso!', 'success');
+            document.getElementById('form-cliente').reset();
+            enderecosTemporarios = [];
+            atualizarListaEnderecos();
+            // Recarregar dados do dashboard
+            setTimeout(() => carregarTotalClientes(), 1000);
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            mostrarMensagem('cliente', error.message || 'Erro ao conectar com o servidor.', 'error');
+        });
     });
-});
+}
 
 /* ============================
    FORMULÁRIO DE PRODUTO
    ============================ */
-document.getElementById('form-produto')?.addEventListener('submit', function (e) {
-    e.preventDefault();
+const formProduto = document.getElementById('form-produto');
+if (formProduto) {
+    formProduto.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-    const nome = document.getElementById('produto-nome').value;
-    const descricao = document.getElementById('produto-descricao').value;
-    const preco = document.getElementById('produto-preco').value;
-    const quantidade = document.getElementById('produto-quantidade').value;
-    const foto = document.getElementById('produto-foto').files[0];
+        // 1. Criamos o objeto DTO exatamente como o Java espera
+        const produtoDTO = {
+            nome: document.getElementById('produto-nome').value,
+            descricao: document.getElementById('produto-descricao').value,
+            preco: parseFloat(document.getElementById('produto-preco').value),
+            quantidade: parseInt(document.getElementById('produto-quantidade').value)
+        };
 
-    // Criar FormData para enviar arquivo
-    const formData = new FormData();
-    formData.append('nome', nome);
-    formData.append('descricao', descricao);
-    formData.append('preco', preco);
-    formData.append('quantidade', quantidade);
-    if (foto) {
-        formData.append('foto', foto);
-    }
+        const foto = document.getElementById('produto-foto').files[0];
 
-    // Enviar para API
-    fetch('/api/produtos', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error('Erro ao cadastrar produto');
+        // 2. Criar FormData
+        const formData = new FormData();
+
+        // 3. O SEGREDO: Transformar o JSON em um Blob application/json
+        // A chave deve ser "produto", igual ao @RequestPart do seu Java
+        formData.append('produto', new Blob([JSON.stringify(produtoDTO)], {
+            type: 'application/json'
+        }));
+
+        // 4. A chave do arquivo deve ser "arquivo", igual ao seu Java
+        if (foto) {
+            formData.append('arquivo', foto);
         }
-    })
-    .then(data => {
-        mostrarMensagem('produto', 'Produto cadastrado com sucesso!', 'success');
-        document.getElementById('form-produto').reset();
-        // Recarregar selects e dashboard
-        carregarProdutosSelect();
-        carregarTotalProdutos();
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        mostrarMensagem('produto', 'Erro ao conectar com o servidor.', 'error');
+
+        // 5. Enviar para a URL correta (verifique se é /api/produtos ou /produto)
+        fetch('/produto', { // Ajuste para a URL do seu @RequestMapping
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.status === 201 ? {} : response.json();
+                } else {
+                    throw new Error('Erro ao cadastrar produto');
+                }
+            })
+            .then(data => {
+                mostrarMensagem('produto', 'Produto cadastrado com sucesso!', 'success');
+                document.getElementById('form-produto').reset();
+                carregarTotalProdutos();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                mostrarMensagem('produto', 'Erro ao conectar com o servidor.', 'error');
+            });
     });
-});
+}
 
 /* ============================
    FORMULÁRIO DE VENDA
    ============================ */
-document.getElementById('form-venda')?.addEventListener('submit', function (e) {
-    e.preventDefault();
+const formVenda = document.getElementById('form-venda');
+if (formVenda) {
+    formVenda.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-    const clienteId = document.getElementById('venda-cliente').value;
-    const produtoId = document.getElementById('venda-produto').value;
-    const quantidade = document.getElementById('venda-quantidade').value;
-    const desconto = document.getElementById('venda-desconto').value || 0;
+        const clienteId = document.getElementById('venda-cliente').value;
+        const produtoId = document.getElementById('venda-produto').value;
+        const quantidade = document.getElementById('venda-quantidade').value;
+        const desconto = document.getElementById('venda-desconto').value || 0;
 
-    if (!clienteId || !produtoId) {
-        mostrarMensagem('venda', 'Por favor, selecione um cliente e um produto!', 'error');
-        return;
-    }
-
-    const vendaData = {
-        clienteId: clienteId,
-        produtoId: produtoId,
-        quantidade: quantidade,
-        desconto: desconto
-    };
-
-    // Enviar para API
-    fetch('/api/vendas', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(vendaData)
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error('Erro ao registrar venda');
+        if (!clienteId || !produtoId) {
+            mostrarMensagem('venda', 'Por favor, selecione um cliente e um produto!', 'error');
+            return;
         }
-    })
-    .then(data => {
-        mostrarMensagem('venda', 'Venda registrada com sucesso!', 'success');
-        document.getElementById('form-venda').reset();
-        // Recarregar dashboard
-        carregarTotalVendas();
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        mostrarMensagem('venda', 'Erro ao conectar com o servidor.', 'error');
+
+        const vendaData = {
+            clienteId: clienteId,
+            produtoId: produtoId,
+            quantidade: quantidade,
+            desconto: desconto
+        };
+
+        // Enviar para API
+        fetch('/venda', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(vendaData)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Erro ao registrar venda');
+            }
+        })
+        .then(data => {
+            mostrarMensagem('venda', 'Venda registrada com sucesso!', 'success');
+            document.getElementById('form-venda').reset();
+            // Recarregar dashboard
+            carregarTotalVendas();
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            mostrarMensagem('venda', 'Erro ao conectar com o servidor.', 'error');
+        });
     });
-});
+}
 
 /* ============================
    FUNÇÕES AUXILIARES
@@ -464,7 +494,7 @@ function exibirListaClientes() {
 
 // Função para exibir lista de produtos
 function exibirListaProdutos() {
-    fetch('/api/produtos')
+    fetch('/produto')
         .then(response => response.json())
         .then(produtos => {
             const tabela = document.createElement('table');
@@ -486,9 +516,9 @@ function exibirListaProdutos() {
                             <td>${produto.id}</td>
                             <td>${produto.nome}</td>
                             <td>${produto.descricao || ''}</td>
-                            <td>${produto.preco ? formatarMoeda(produto.preco) : ''}</td>
+                            <td>${produto.precoVenda ? formatarMoeda(produto.precoVenda) : ''}</td>
                             <td>${produto.quantidade || ''}</td>
-                            <td>${produto.foto ? `<img src="${produto.foto}" alt="Foto" style="width:40px;height:40px;border-radius:50%">` : ''}</td>
+                            <td>${produto.imagem ? `<img src="${produto.imagem}" alt="Foto do produto" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">` : ''}</td>
                         </tr>
                     `).join('')}
                 </tbody>
