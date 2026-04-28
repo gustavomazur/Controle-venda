@@ -16,8 +16,8 @@ public class ProdutoMapper {
                 produto.getQuantidade(),
                 produto.getCategoria(),
                 produto.getDescricao(),
-                produto.getPrecoCompra(),
-                produto.getPrecoVenda(),
+                produto.getPrecoDeCompra(),
+                produto.getPrecoDeVenda(),
                 produto.getImagem(),
                 produto.getBarraDoProduto()
         );

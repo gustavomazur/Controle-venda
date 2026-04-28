@@ -17,14 +17,17 @@ public class VendaMapper {
 
         return new VendaDTO(
                 venda.getId(),
+                venda.getData(),
                 venda.getCliente() != null ? venda.getCliente().getId() : null,
                 venda.getCliente() != null ? venda.getCliente().getNome() : "Consumidor Final",
                 venda.getVendedor(),
                 venda.getTipoPagamento(),
                 venda.getDesconto(),
+                venda.getValorTotal(),
+                venda.getLucroTotal(),
                 venda.getItens() != null ?
-                        venda.getItens().stream().map(IntemVendaMapper::paraDTO).toList() : new ArrayList<>(),
-                venda.getData()
+                        venda.getItens().stream().map(IntemVendaMapper::paraDTO).toList() : new ArrayList<>()
+
         );
     }
     public static Venda paraEntidade(VendaDTO dto) {

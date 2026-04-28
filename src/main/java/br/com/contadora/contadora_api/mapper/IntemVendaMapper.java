@@ -12,7 +12,7 @@ public class IntemVendaMapper {
         return  new ItemVendaDTO(
                 item.getProduto().getId(),
                 item.getQuantidade(),
-                item.getPreco()
+                item.getPrecoVendido()
         );
     }
     public static ItemVenda paraEntidade(ItemVendaDTO dto) {
@@ -26,7 +26,7 @@ public class IntemVendaMapper {
 
         item.setProduto(produto);
         item.setQuantidade(dto.quantidade());
-        item.setPreco(dto.preco());
+        item.setPrecoVendido(dto.preco());
         return  item;
     }
 }
